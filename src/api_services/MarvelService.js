@@ -22,7 +22,7 @@ class MarvelServise {
   }
   _transformCharacter = (char) => {
     let description = char.description ? char.description : "There is no description...";
-    description = description.length > 30 ? description.slice(0, 30) : description;
+    description = description.length > 30 ? description.slice(0, 45) + "..." : description;
 
     return {
       name: char.name,
