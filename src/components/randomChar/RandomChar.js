@@ -1,5 +1,5 @@
 import './randomChar.scss';
-import thor from '../../resources/img/thor.jpeg';
+// import thor from '../../resources/img/thor.jpeg';
 import mjolnir from '../../resources/img/mjolnir.png';
 import { Component } from 'react';
 import MarvelServise from '../../api_services/MarvelService';
@@ -35,11 +35,15 @@ class RandomChar extends Component {
 
 	render() {
 		const { char, loading, error } = this.state;
-
+		const errorMessage = error ? ErrorMessage : null;
+		const spinnerComp = loading ? Spinner : null;
+		const contentComp = !(loading || error) ? <ViewChar char={char} /> : null;
 
 		return (
 			<div className="randomchar">
-				{loading ? <Spinner /> : <ViewChar char={char} />}
+				{errorMessage}
+				{spinnerComp}
+				{contentComp}
 
 				<div className="randomchar__static">
 					<p className="randomchar__title">
