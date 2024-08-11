@@ -5,20 +5,34 @@ import CharInfo from "../charInfo/CharInfo";
 
 import decoration from '../../resources/img/vision.png';
 
-const App = () => {
-    return (
-        <div className="app">
-            <AppHeader/>
-            <main>
-                <RandomChar/>
-                <div className="char__content">
-                    <CharList/>
-                    <CharInfo/>
-                </div>
-                <img className="bg-decoration" src={decoration} alt="vision"/>
-            </main>
-        </div>
-    )
-}
+import { Component } from 'react';
 
+
+class App extends Component {
+  state = {
+    clickedCharId: null
+  }
+
+  onCharClicked = (id) => {
+    this.setState({ clickedCharId: id });
+  }
+
+
+  render() {
+    const { clickedCharId } = this.state;
+    return (
+      <div className="app">
+        <AppHeader />
+        <main>
+          <RandomChar />
+          <div className="char__content">
+            <CharList onCharClicked={this.onCharClicked} />
+            <CharInfo charId={clickedCharId} />
+          </div>
+          <img className="bg-decoration" src={decoration} alt="vision" />
+        </main>
+      </div>
+    )
+  }
+}
 export default App;

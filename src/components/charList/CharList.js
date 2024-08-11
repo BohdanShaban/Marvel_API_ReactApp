@@ -33,7 +33,7 @@ class CharList extends Component {
   }
   renderCharacterCards = (characters) => {
     const cards = characters.map((item) => {
-      const { name, thumbnail } = item;
+      const { name, thumbnail, id } = item;
 
       let inline = { objectFit: 'cover' };
       if (thumbnail.slice(-23) === 'image_not_available.jpg') {
@@ -41,14 +41,14 @@ class CharList extends Component {
       }
 
       return (
-        <li className="char__item" key={item.id}>
+        <li className="char__item" key={id} onClick={() => this.props.onCharClicked(id)}>
           <img src={thumbnail} alt={name} style={inline} />
           <div className="char__name">{name}</div>
         </li>
       )
     })
 
-    return (
+    return ( // This Block Exist For Spinner On Page Centering
       <ul className="char__grid">
         {cards}
       </ul>

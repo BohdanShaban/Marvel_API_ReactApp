@@ -33,11 +33,12 @@ class RandomChar extends Component {
 			.getCharacter(id)
 			.then(this.onCharLoaded)
 			.catch(this.onError);
-		console.log("updateCharacter() Was Called...");
+		console.log("updateCharacter() in RandomChar Comp Was Called...");
 	}
 
 	render() {
 		const { char, loading, error } = this.state;
+
 		const errorMessage = error ? <ErrorMessage /> : null;
 		const spinnerComp = loading ? <Spinner /> : null;
 		const content = !(loading || error) ? <ViewChar char={char} /> : null;

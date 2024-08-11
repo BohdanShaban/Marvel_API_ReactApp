@@ -30,7 +30,8 @@ class MarvelServise {
       description: description,
       thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
       homepage: char.urls[0].url,
-      wiki: char.urls[1].url
+      wiki: char.urls[1].url,
+      comicses: char.comics.items.slice(0, 10), //Take Only 10 Comics
     }
   }
 }
