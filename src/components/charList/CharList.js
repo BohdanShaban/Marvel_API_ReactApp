@@ -38,8 +38,20 @@ class CharList extends Component {
     this.setState({ loading: false, error: true })
   }
 
+  itemRefs = [];
+  setRef = (ref) => {
+    this.itemRefs.push(ref);
+  }
+  focusOnItem = (id) => {
+    // Я реализовал вариант чуть сложнее, и с классом и с фокусом
+    // Но в теории можно оставить только фокус, и его в стилях использовать вместо класса
+    this.itemRefs.forEach(item => item.classList.remove('char__item_selected'));
+    this.itemRefs[id].classList.add('char__item_selected');
+    this.itemRefs[id].focus();
+  }
+
   renderCharacterCards = (characters) => {
-    const cards = characters.map((item) => {
+    const cards = characters.map((item, i) => {
       const { name, thumbnail, id } = item;
 
       let inline = { objectFit: 'cover' };
@@ -47,7 +59,16 @@ class CharList extends Component {
         inline = { objectFit: 'contain' };
       }
       return (
-        <li className="char__item" key={id} onClick={() => this.props.onCharClicked(id)}>
+        <li className="char__item" key={id}
+          onClick={() => { this.props.onCharClicked(id); this.focusOnItem(i); }}
+          onKeyUp={(e) => {
+            if (e.key === ' ' || e.key === "Enter") {
+              this.props.onCharClicked(id);
+              this.focusOnItem(i);
+            }
+          }}
+          tabIndex={0}
+          ref={this.setRef}>
           <img src={thumbnail} alt={name} style={inline} />
           <div className="char__name">{name}</div>
         </li>
