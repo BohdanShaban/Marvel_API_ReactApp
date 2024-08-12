@@ -1,5 +1,5 @@
 import './charList.scss';
-import abyss from '../../resources/img/abyss.jpg';
+import PropTypes from 'prop-types';
 
 import { Component } from 'react';
 import MarvelServise from '../../api_services/MarvelService';
@@ -8,29 +8,36 @@ import ErrorMessage from '../error/ErrorMessage';
 
 class CharList extends Component {
   state = {
-    characters: null,
+    characters: [],
     loading: true,
-    error: false
+    error: false,
+    offSet: 210,
+    newCharsLoading: false,
   }
   marvelService = new MarvelServise();
 
   componentDidMount() {
-    this.loadCharacters();
+    this.onRequest();
+  }
+  onRequest = (offset) => {
+    this.setState({ newCharsLoading: true });
+    this.marvelService.get_9_Characters(offset)
+      .then(this.onCharsLoaded)
+      .catch(this.onError)
+  }
+  onCharsLoaded = (newChars) => {
+    this.setState({ loading: true })
+    this.setState(({ characters, offSet }) => ({
+      characters: [...characters, ...newChars],
+      loading: false,
+      newCharsLoading: false,
+      offSet: offSet + 9,
+    }))
   }
   onError = (e) => {
     this.setState({ loading: false, error: true })
   }
-  onCharactersLoaded = (characters) => {
-    this.setState({ characters, loading: false })
-  }
-  loadCharacters = () => {
-    this.setState({ loading: true })
-    this.marvelService
-      .get_9_Characters()
-      .then(this.onCharactersLoaded)
-      .catch(this.onError);
-    console.log("get_9_Characters() Was Called...");
-  }
+
   renderCharacterCards = (characters) => {
     const cards = characters.map((item) => {
       const { name, thumbnail, id } = item;
@@ -39,7 +46,6 @@ class CharList extends Component {
       if (thumbnail.slice(-23) === 'image_not_available.jpg') {
         inline = { objectFit: 'contain' };
       }
-
       return (
         <li className="char__item" key={id} onClick={() => this.props.onCharClicked(id)}>
           <img src={thumbnail} alt={name} style={inline} />
@@ -47,17 +53,15 @@ class CharList extends Component {
         </li>
       )
     })
-
-    return ( // This Block Exist For Spinner On Page Centering
+    return ( // This Block Exist For Spinner Centering On Page
       <ul className="char__grid">
         {cards}
       </ul>
     )
   }
 
-
   render() {
-    const { characters, loading, error } = this.state;
+    const { characters, loading, error, offSet, newCharsLoading } = this.state;
     let characterCards = characters ? this.renderCharacterCards(characters) : null;
 
     const errorMessage = error ? <ErrorMessage /> : null;
@@ -71,12 +75,17 @@ class CharList extends Component {
         {spinner}
         {content}
 
-        <button className="button button__main button__long">
+        <button onClick={() => this.onRequest(offSet)}
+          className="button button__main button__long"
+          disabled={newCharsLoading}>
           <div className="inner">load more</div>
         </button>
       </div>
     )
   }
+}
+CharList.propTypes = {
+  onCharClicked: PropTypes.func.isRequired,
 }
 
 export default CharList;

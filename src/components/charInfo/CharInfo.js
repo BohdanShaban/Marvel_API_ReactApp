@@ -1,7 +1,7 @@
-import './charInfo.scss';
-import thor from '../../resources/img/thor.jpeg';
-
 import { Component } from 'react';
+import PropTypes from 'prop-types';
+
+import './charInfo.scss';
 import MarvelServise from '../../api_services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../error/ErrorMessage';
@@ -117,6 +117,9 @@ const ViewCharInfo = ({ char }) => {
       </ul>
     </>
   )
+}
+CharInfo.propTypes = {
+  charId: PropTypes.number,
 }
 
 export default CharInfo;
