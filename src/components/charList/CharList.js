@@ -1,56 +1,47 @@
 import './charList.scss';
 import PropTypes from 'prop-types';
 
-import { Component } from 'react';
-import MarvelServise from '../../api_services/MarvelService';
+import { useState, useEffect, useRef } from 'react';
+import useMarvelServise from '../../api_services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../error/ErrorMessage';
 
-class CharList extends Component {
-  state = {
-    characters: [],
-    loading: true,
-    error: false,
-    offSet: 210,
-    newCharsLoading: false,
-  }
-  marvelService = new MarvelServise();
+const CharList = (props) => {
 
-  componentDidMount() {
-    this.onRequest();
+  const [characters, setCharacters] = useState([]);
+  const [offSet, setOffSet] = useState(210);
+  const [newCharsLoading, setNewCharsLoading] = useState(false);
+
+  const { loading, error, get_9_Characters } = useMarvelServise();
+
+  useEffect(() => {
+    onRequest(offSet, true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // CompDidMount
+
+  const onRequest = (offset, initial) => {
+    initial ? setNewCharsLoading(false) : setNewCharsLoading(true);
+    get_9_Characters(offset)
+      .then(onCharsLoaded)
+    console.log("onRequest() in CharList Comp Was Called...");
   }
-  onRequest = (offset) => {
-    this.setState({ newCharsLoading: true });
-    this.marvelService.get_9_Characters(offset)
-      .then(this.onCharsLoaded)
-      .catch(this.onError)
-  }
-  onCharsLoaded = (newChars) => {
-    this.setState({ loading: true })
-    this.setState(({ characters, offSet }) => ({
-      characters: [...characters, ...newChars],
-      loading: false,
-      newCharsLoading: false,
-      offSet: offSet + 9,
-    }))
-  }
-  onError = (e) => {
-    this.setState({ loading: false, error: true })
+  const onCharsLoaded = (newChars) => {
+    setCharacters(oldChars => [...oldChars, ...newChars]);
+    setNewCharsLoading(false);
+    setOffSet(offSet => offSet + 9);
   }
 
-  itemRefs = [];
-  setRef = (ref) => {
-    this.itemRefs.push(ref);
-  }
-  focusOnItem = (id) => {
+  const itemRefs = useRef([]);
+
+  const focusOnItem = (id) => {
     // Я реализовал вариант чуть сложнее, и с классом и с фокусом
     // Но в теории можно оставить только фокус, и его в стилях использовать вместо класса
-    this.itemRefs.forEach(item => item.classList.remove('char__item_selected'));
-    this.itemRefs[id].classList.add('char__item_selected');
-    this.itemRefs[id].focus();
+    itemRefs.current.forEach(item => item.classList.remove('char__item_selected'));
+    itemRefs.current[id].classList.add('char__item_selected');
+    itemRefs.current[id].focus();
   }
 
-  renderCharacterCards = (characters) => {
+  const renderCharacterCards = (characters) => {
     const cards = characters.map((item, i) => {
       const { name, thumbnail, id } = item;
 
@@ -60,15 +51,15 @@ class CharList extends Component {
       }
       return (
         <li className="char__item" key={id}
-          onClick={() => { this.props.onCharClicked(id); this.focusOnItem(i); }}
+          onClick={() => { props.onCharClicked(id); focusOnItem(i); }}
           onKeyUp={(e) => {
             if (e.key === ' ' || e.key === "Enter") {
-              this.props.onCharClicked(id);
-              this.focusOnItem(i);
+              props.onCharClicked(id);
+              focusOnItem(i);
             }
           }}
           tabIndex={0}
-          ref={this.setRef}>
+          ref={el => itemRefs.current[i] = el}>
           <img src={thumbnail} alt={name} style={inline} />
           <div className="char__name">{name}</div>
         </li>
@@ -81,29 +72,26 @@ class CharList extends Component {
     )
   }
 
-  render() {
-    const { characters, loading, error, offSet, newCharsLoading } = this.state;
-    let characterCards = characters ? this.renderCharacterCards(characters) : null;
 
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error) ? characterCards : null;
+  let characterCards = renderCharacterCards(characters);
 
-    return (
-      <div className="char__list">
+  const errorMessage = error ? <ErrorMessage /> : null;
+  const spinner = loading && !newCharsLoading ? <Spinner /> : null;
 
-        {errorMessage}
-        {spinner}
-        {content}
+  return (
+    <div className="char__list">
 
-        <button onClick={() => this.onRequest(offSet)}
-          className="button button__main button__long"
-          disabled={newCharsLoading}>
-          <div className="inner">load more</div>
-        </button>
-      </div>
-    )
-  }
+      {errorMessage}
+      {spinner}
+      {characterCards}
+
+      <button onClick={() => onRequest(offSet)}
+        className="button button__main button__long"
+        disabled={newCharsLoading}>
+        <div className="inner">load more</div>
+      </button>
+    </div>
+  )
 }
 CharList.propTypes = {
   onCharClicked: PropTypes.func.isRequired,

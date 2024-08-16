@@ -1,27 +1,21 @@
+import { useHttp } from "../hooks/http.hook";
 
-class MarvelServise {
-  _apiKey = '31e00cd22de311c9c0aa0e690688d87b';
-  _apiBase = 'https://gateway.marvel.com:443/v1/public/';
-  _baseOffSet = 210;
+const useMarvelServise = () => {
+  const { loading, error, makeRequest, clearError } = useHttp();
 
-  getResource = async (url) => {
-    let result = await fetch(url);
+  const _apiKey = '31e00cd22de311c9c0aa0e690688d87b';
+  const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
+  const _baseOffSet = 210;
 
-    if (!result.ok) {
-      throw new Error(`Could not fetch ${url}, status: ${result.status}`);
-    }
-    return await result.json();
+  const get_9_Characters = async (offset = _baseOffSet) => {
+    const res = await makeRequest(`${_apiBase}characters?limit=9&offset=${offset}&apikey=${_apiKey}`);
+    return res.data.results.map(_transformCharacter);
   }
-
-  get_9_Characters = async (offset = this._baseOffSet) => {
-    const res = await this.getResource(`${this._apiBase}characters?limit=9&offset=${offset}&apikey=${this._apiKey}`);
-    return res.data.results.map(this._transformCharacter);
+  const getCharacter = async (id) => {
+    const res = await makeRequest(`${_apiBase}characters/${id}?&apikey=${_apiKey}`);
+    return _transformCharacter(res.data.results[0]);
   }
-  getCharacter = async (id) => {
-    const res = await this.getResource(`${this._apiBase}characters/${id}?&apikey=${this._apiKey}`);
-    return this._transformCharacter(res.data.results[0]);
-  }
-  _transformCharacter = (char) => {
+  const _transformCharacter = (char) => {
     let description = char.description ? char.description : "There is no description...";
     description = description.length > 30 ? description.slice(0, 40) + "..." : description;
 
@@ -35,5 +29,6 @@ class MarvelServise {
       comicses: char.comics.items.slice(0, 10), //Take Only 10 Comics
     }
   }
+  return { loading, error, clearError, get_9_Characters ,getCharacter}
 }
-export default MarvelServise;
+export default useMarvelServise;

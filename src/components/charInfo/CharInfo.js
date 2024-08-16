@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import './charInfo.scss';
@@ -7,65 +7,63 @@ import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../error/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
 
-class CharInfo extends Component {
+const CharInfo = (props) => {
 
-  state = {
-    char: null,
-    loading: false,
-    error: false
-  }
-  marvelService = new MarvelServise();
+  const [char, setChar] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
-  componentDidMount() {
-    this.updateCharacter();
-  }
-  componentDidUpdate(prevProps, prevState) {
-    if (this.props.charId !== prevProps.charId) {
-      this.updateCharacter();
-    }
-  }
+  const marvelService = new MarvelServise();
 
-  onError = (e) => {
-    this.setState({ loading: false, error: true })
+  useEffect(() => {
+    updateCharacter()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.charId])
+
+  const onError = (e) => {
+    // this.setState({ loading: false, error: true })
+    setLoading(false);
+    setError(true);
   }
-  onCharLoaded = (char) => {
-    this.setState({ char, loading: false })
+  const onCharLoaded = (char) => {
+    // this.setState({ char, loading: false })
+    setChar(char);
+    setLoading(false);
   }
-  onCharLoading = () => {
-    this.setState({ loading: true })
+  const onCharLoading = () => {
+    // this.setState({ loading: true })
+    setLoading(true);
   }
-  updateCharacter = () => {
-    const { charId } = this.props;
+  const updateCharacter = () => {
+    const { charId } = props;
     if (!charId) return;
 
-    this.onCharLoading();
+    onCharLoading();
 
-    this.marvelService
-      .getCharacter(charId)
-      .then(this.onCharLoaded)
-      .catch(this.onError);
+    marvelService.getCharacter(charId)
+      .then(onCharLoaded)
+      .catch(onError);
     console.log("updateCharacter() in CharInfo Comp Was Called...");
   }
 
-  render() {
-    const { char, loading, error } = this.state;
 
-    const skelleton = char || loading || error ? null : <Skeleton />;
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading ? <Spinner /> : null;
-    const content = !(loading || error || !char) ? <ViewCharInfo char={char} /> : null;
+  // const { char, loading, error } = this.state;
 
-    return (
-      <div className="char__info">
+  const skelleton = char || loading || error ? null : <Skeleton />;
+  const errorMessage = error ? <ErrorMessage /> : null;
+  const spinner = loading ? <Spinner /> : null;
+  const content = !(loading || error || !char) ? <ViewCharInfo char={char} /> : null;
 
-        {skelleton}
-        {errorMessage}
-        {spinner}
-        {content}
+  return (
+    <div className="char__info" >
 
-      </div>
-    )
-  }
+      {skelleton}
+      {errorMessage}
+      {spinner}
+      {content}
+
+    </div>
+  )
 }
 
 const ViewCharInfo = ({ char }) => {
