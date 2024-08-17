@@ -1,22 +1,32 @@
 import AppHeader from "../appHeader/AppHeader";
 import CharactersPage from "../pages/CharactersPage";
 import ComicsPage from "../pages/ComicsPage";
-
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom/cjs/react-router-dom.min";  
 
 const App = (props) => {
 
 
-
   return (
-    <div className="app">
-      <AppHeader />
-      <main>
+    <Router>
+      <div className="app">
+        <AppHeader />
+        <main>
 
-        {/* <CharactersPage /> */}
-        <ComicsPage />
+          <Switch>
 
-      </main>
-    </div>
+            <Route exact path="/comics">
+              <ComicsPage />
+            </Route>
+
+            <Route exact path="/">
+              <CharactersPage />
+            </Route>
+
+          </Switch>
+
+        </main>
+      </div>
+    </Router>
   )
 }
 export default App;
