@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import './charInfo.scss';
-import MarvelServise from '../../api_services/MarvelService';
+import useMarvelServise from '../../api_services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../error/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
@@ -10,44 +10,28 @@ import Skeleton from '../skeleton/Skeleton';
 const CharInfo = (props) => {
 
   const [char, setChar] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
 
-  const marvelService = new MarvelServise();
+  const { loading, error, clearError, getCharacter } = useMarvelServise();
 
   useEffect(() => {
     updateCharacter()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.charId])
 
-  const onError = (e) => {
-    // this.setState({ loading: false, error: true })
-    setLoading(false);
-    setError(true);
-  }
   const onCharLoaded = (char) => {
-    // this.setState({ char, loading: false })
     setChar(char);
-    setLoading(false);
   }
-  const onCharLoading = () => {
-    // this.setState({ loading: true })
-    setLoading(true);
-  }
+
   const updateCharacter = () => {
     const { charId } = props;
     if (!charId) return;
 
-    onCharLoading();
+    clearError();
 
-    marvelService.getCharacter(charId)
+    getCharacter(charId)
       .then(onCharLoaded)
-      .catch(onError);
-    console.log("updateCharacter() in CharInfo Comp Was Called...");
+    console.log("getCharacter() in CharInfo Comp Was Called...");
   }
-
-
-  // const { char, loading, error } = this.state;
 
   const skelleton = char || loading || error ? null : <Skeleton />;
   const errorMessage = error ? <ErrorMessage /> : null;

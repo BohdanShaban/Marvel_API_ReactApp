@@ -23,7 +23,7 @@ const CharList = (props) => {
     initial ? setNewCharsLoading(false) : setNewCharsLoading(true);
     get_9_Characters(offset)
       .then(onCharsLoaded)
-    console.log("onRequest() in CharList Comp Was Called...");
+    console.log("get_9_Characters() in CharList Comp Was Called...");
   }
   const onCharsLoaded = (newChars) => {
     setCharacters(oldChars => [...oldChars, ...newChars]);
@@ -73,8 +73,7 @@ const CharList = (props) => {
   }
 
 
-  let characterCards = renderCharacterCards(characters);
-
+  const characterCards = renderCharacterCards(characters);
   const errorMessage = error ? <ErrorMessage /> : null;
   const spinner = loading && !newCharsLoading ? <Spinner /> : null;
 
@@ -85,7 +84,8 @@ const CharList = (props) => {
       {spinner}
       {characterCards}
 
-      <button onClick={() => onRequest(offSet)}
+      <button
+        onClick={() => onRequest(offSet)}
         className="button button__main button__long"
         disabled={newCharsLoading}>
         <div className="inner">load more</div>
