@@ -1,7 +1,7 @@
 import AppHeader from "../appHeader/AppHeader";
 import CharactersPage from "../pages/CharactersPage";
 import ComicsPage from "../pages/ComicsPage";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom/cjs/react-router-dom.min";  
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 const App = (props) => {
 
@@ -12,21 +12,17 @@ const App = (props) => {
         <AppHeader />
         <main>
 
-          <Switch>
+          <Routes>
 
-            <Route exact path="/comics">
-              <ComicsPage />
-            </Route>
+            <Route path="/comics" element={<ComicsPage />} />
 
-            <Route exact path="/">
-              <CharactersPage />
-            </Route>
+            <Route path="/" element={<CharactersPage />} />
 
-          </Switch>
+          </Routes>
 
         </main>
       </div>
-    </Router>
+    </Router >
   )
 }
 export default App;
