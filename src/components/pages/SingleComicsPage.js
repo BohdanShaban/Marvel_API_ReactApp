@@ -41,6 +41,7 @@ const SingleComicsPage = () => {
   )
 }
 
+
 const ViewComic = ({ comic }) => {
   const { thumbnail, description, title, price, pageCount, language } = comic;
 
