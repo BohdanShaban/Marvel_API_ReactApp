@@ -1,8 +1,7 @@
 import './comicsList.scss';
-// import uw from '../../resources/img/UW.png';
-// import xMen from '../../resources/img/x-men.png';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../error/ErrorMessage';
+import { Link } from "react-router-dom";
 
 import { useState, useEffect, useRef } from 'react';
 import useMarvelServise from '../../api_services/MarvelService';
@@ -63,11 +62,11 @@ const ComicsList = (props) => {
 						tabIndex={0}
 						ref={el => itemRefs.current[i] = el}>
 
-						<a href="#">
+						<Link to={`/comics/${id}`}>
 							<img src={thumbnail} alt={title} style={inline} className="comics__item-img" />
 							<div className="comics__item-name">{title}</div>
 							<div className="comics__item-price">{price}</div>
-						</a>
+						</Link>
 					</li>
 				</>
 			)
