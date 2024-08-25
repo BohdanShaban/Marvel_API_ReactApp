@@ -4,3 +4,4 @@ import Page404 from "./404";
 import SingleComicsPage from "./SingleComicsPage";
 
 export { CharactersPage, ComicsPage, Page404, SingleComicsPage };
+// import { CharactersPage, ComicsPage, Page404, SingleComicsPage } from '../pages';
