@@ -1,5 +1,6 @@
 import './charList.scss';
 import PropTypes from 'prop-types';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { useState, useEffect, useRef } from 'react';
 import useMarvelServise from '../../api_services/MarvelService';
@@ -50,24 +51,29 @@ const CharList = (props) => {
         inline = { objectFit: 'contain' };
       }
       return (
-        <li className="char__item" key={id}
-          onClick={() => { props.onCharClicked(id); focusOnItem(i); }}
-          onKeyUp={(e) => {
-            if (e.key === ' ' || e.key === "Enter") {
-              props.onCharClicked(id);
-              focusOnItem(i);
-            }
-          }}
-          tabIndex={0}
-          ref={el => itemRefs.current[i] = el}>
-          <img src={thumbnail} alt={name} style={inline} />
-          <div className="char__name">{name}</div>
-        </li>
+        <CSSTransition key={item.id} timeout={500} classNames="char__item">
+          <li className="char__item"
+            onClick={() => { props.onCharClicked(id); focusOnItem(i); }}
+            onKeyUp={(e) => {
+              if (e.key === ' ' || e.key === "Enter") {
+                props.onCharClicked(id);
+                focusOnItem(i);
+              }
+            }}
+            tabIndex={0}
+            ref={el => itemRefs.current[i] = el}>
+            <img src={thumbnail} alt={name} style={inline} />
+            <div className="char__name">{name}</div>
+          </li>
+        </CSSTransition>
+
       )
     })
     return ( // This Block Exist For Spinner Centering On Page
       <ul className="char__grid">
-        {cards}
+        <TransitionGroup component={null}>
+          {cards}
+        </TransitionGroup>
       </ul>
     )
   }
